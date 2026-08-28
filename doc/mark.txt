@@ -147,7 +147,14 @@ COMMANDS                                                *mark-commands*
 
                                                         *:Mark-load*
 :Mark load [slot]
-    Load the mark set from [slot].
+    Load the mark set from [slot], replacing the current set (marks of the
+    current set that are not in the slot are lost).
+
+:Mark load! [slot]
+    Merge the mark set from [slot] into the current set instead of
+    replacing it: patterns are added as alternatives of the corresponding
+    group, already present alternatives are skipped, and the display state
+    is kept. Patterns beyond the number of groups are ignored.
 
                                                         *:Mark-palette*
 :Mark palette {name}

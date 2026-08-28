@@ -43,7 +43,7 @@ the original default mappings.
 | `:Mark clear [N\|all]`   | clear current mark / group N / everything                 |
 | `:Mark toggle`           | enable/disable display (patterns kept)                    |
 | `:Mark save [slot]`      | store current set in a slot                               |
-| `:Mark load [slot]`      | load a slot                                               |
+| `:Mark load [slot]`      | load a slot (`load!` merges into the current set)             |
 | `:Mark palette {name}`   | switch between 'original' / 'extended' / 'maximum'        |
 
 ## Default mappings

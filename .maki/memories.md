@@ -20,6 +20,7 @@
 - matchadd() engine (not decoration provider); cycle on overflow; full original mapping surface; global persistence + filetype→marks activation (NO per-file marks; earlier "clear mapping per file" idea dropped); strict `:Mark` subcommands.
 - Number of mark groups == #colors (or palette length); group N uses colors[N].
 - `:Mark set!` = keep already-marked pattern (no toggle-off), make it current.
+- `:Mark load! [slot]` merges the slot into the current set (group-wise alternatives, duplicates skipped, display state kept); plain `:Mark load` replaces. The bang belongs to the SUBCOMMAND (`:Mark load!`, `:Mark set!`); the canonical `:Mark!` position is intentionally unsupported (no `bang` attr on the command).
 
 ## Gotchas
 - nvim_set_hl needs integer cterm colors (coerce digit strings).

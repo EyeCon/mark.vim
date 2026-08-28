@@ -108,6 +108,9 @@ local function complete(arglead, cmdline, cursorpos)
   -- Index of the token currently being completed.
   local position = #tokens + (ends_with_space and 1 or 0)
   local sub = tokens[2]
+  if sub ~= nil then
+    sub = sub:match('^(.-)!$') or sub
+  end
 
   if position <= 2 then
     return vim.tbl_filter(function(name)
@@ -157,6 +160,13 @@ local function command_mark(opts)
     util.error('Usage: Mark set|list|clear|toggle|save|load|palette [...]')
     return
   end
+  -- The bang belongs to the subcommand (:Mark load!, :Mark set!).
+  local bang = false
+  local stripped = sub:match('^(.-)!$')
+  if stripped then
+    sub = stripped
+    bang = true
+  end
 
   if sub == 'set' then
     local group = 0
@@ -170,7 +180,7 @@ local function command_mark(opts)
       util.error('Usage: Mark set [group] {pattern}')
       return
     end
-    local success, _, err = marks().set_mark(group, pattern, opts.bang)
+    local success, _, err = marks().set_mark(group, pattern, bang)
     if not success and err then
       util.error(err)
     end
@@ -197,12 +207,24 @@ local function command_mark(opts)
       util.info(string.format('Saved %d mark%s to slot "%s"', used, used == 1 and '' or 's', slot or 'default'))
     end
   elseif sub == 'load' then
-    local used, err = persistence().load(rest ~= '' and rest or nil)
+    local slot = rest ~= '' and rest or nil
+    local used, err
+    if bang then
+      -- Merge the slot into the current set instead of replacing it.
+      used, err = persistence().merge(slot)
+      if err == nil then
+        util.info(string.format('Merged %d mark%s from slot "%s"%s', used, used == 1 and '' or 's',
+          slot or 'default', state.enabled and '' or '; marks currently disabled'))
+      end
+    else
+      used, err = persistence().load(slot)
+      if err == nil then
+        util.info(string.format('Loaded %d mark%s%s', used, used == 1 and '' or 's',
+          state.enabled and '' or '; marks currently disabled'))
+      end
+    end
     if err then
       util.error(err)
-    else
-      util.info(string.format('Loaded %d mark%s%s', used, used == 1 and '' or 's',
-        state.enabled and '' or '; marks currently disabled'))
     end
   elseif sub == 'palette' then
     M.set_palette(rest)
@@ -345,7 +367,6 @@ end
 local function register_commands()
   vim.api.nvim_create_user_command('Mark', command_mark, {
     nargs = '*',
-    bang = true,
     desc = 'Highlight several words in different colors',
     complete = complete,
   })

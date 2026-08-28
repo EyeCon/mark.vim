@@ -95,6 +95,42 @@ function M.load(slot_name)
   return M.apply(stored.patterns, stored.enabled), nil
 end
 
+--- Merge a stored slot's patterns into the current mark set, group by group:
+-- patterns are added as alternatives of the corresponding group, already
+-- present alternatives are skipped, and the display state is kept untouched
+-- (unlike load(), which replaces). Patterns beyond the group count are
+-- ignored. Returns (added_count, error_text).
+function M.merge(slot_name)
+  local slot = slot_name or DEFAULT_SLOT
+  local data = read_data()
+  local stored = data.slots and data.slots[slot]
+  if type(stored) ~= 'table' or type(stored.patterns) ~= 'table' then
+    return 0, string.format('No marks stored in slot "%s"', slot)
+  end
+
+  local util = require('mark.util')
+  local added = 0
+  for index = 1, math.min(#stored.patterns, state.num_groups) do
+    local pattern = tostring(stored.patterns[index])
+    if pattern ~= '' then
+      local current = state.patterns[index] or ''
+      if current == '' then
+        state.patterns[index] = pattern
+        added = added + 1
+      elseif not vim.list_contains(util.split_alternatives(current), pattern) then
+        state.patterns[index] = current .. '\\|' .. pattern
+        added = added + 1
+      end
+    end
+  end
+
+  if added > 0 then
+    M.auto_save()
+    highlight.refresh()
+  end
+  return added, nil
+end
+
 --- Names of all stored slots (sorted).
 function M.slot_names()
   local data = read_data()
