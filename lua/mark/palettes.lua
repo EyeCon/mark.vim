@@ -6,6 +6,10 @@
 
 local M = {}
 
+-- The default palette: the original 6 colors of the old plugin (groups 1-6),
+-- extended to 9 groups with colors from the old palettes that add new hues:
+-- a vivid teal (from 'maximum') and a dark neutral gray (from 'extended'),
+-- chosen to stay clearly distinct from groups 1-6.
 M.original = {
   { ctermbg = 'Cyan',    ctermfg = 'Black', bg = '#8CCBEA', fg = 'Black' },
   { ctermbg = 'Green',   ctermfg = 'Black', bg = '#A4E57E', fg = 'Black' },
@@ -13,6 +17,9 @@ M.original = {
   { ctermbg = 'Red',     ctermfg = 'Black', bg = '#FF7272', fg = 'Black' },
   { ctermbg = 'Magenta', ctermfg = 'Black', bg = '#FFB3FF', fg = 'Black' },
   { ctermbg = 'Blue',    ctermfg = 'Black', bg = '#9999FF', fg = 'Black' },
+  { ctermbg = '43',    ctermfg = 'Black', bg = '#00d7af', fg = 'Black' },
+  { ctermbg = 'Brown', ctermfg = 'Black', bg = '#FFC4A1', fg = '#803000' },
+  { ctermbg = 'Black', ctermfg = 'White', bg = '#53534C', fg = '#DDDDDD' },
 }
 
 M.extended = {

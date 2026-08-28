@@ -31,8 +31,8 @@ require('mark').setup({
 })
 ```
 
-Without `setup()`, the plugin starts with the built-in 'original' palette and
-the original default mappings.
+Without `setup()`, the plugin starts with the built-in 'original' palette
+(9 colors) and the original default mappings.
 
 ## Commands
 

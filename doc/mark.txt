@@ -46,8 +46,10 @@ CONFIGURATION                                        *mark-configuration*
 
                                                         *mark-palette*
 `palette` ~
-  Used when `colors` is nil: one of 'original' (default), 'extended',
-  'maximum'. Switch at runtime with `:Mark palette {name}`.
+  Used when `colors` is nil: one of 'original' (default, 9 colors - the
+  original plugin's 6 defaults plus a teal and a dark gray from its other
+  palettes), 'extended', 'maximum'. Switch at runtime with
+  `:Mark palette {name}`.
 
                                                         *mark-ignorecase*
 `ignorecase` ~
