@@ -53,7 +53,7 @@ local defaults = {
   },
 }
 
-local subcommands = { 'set', 'list', 'clear', 'toggle', 'save', 'load', 'palette' }
+local subcommands = { 'set', 'list', 'edit', 'clear', 'toggle', 'save', 'load', 'palette' }
 
 M._default_maps = {}
 
@@ -126,11 +126,16 @@ local function complete(arglead, cmdline, cursorpos)
     if position == 3 then
       return require('mark.palettes').complete_names(arglead)
     end
-  elseif sub == 'clear' then
+  elseif sub == 'clear' or sub == 'edit' then
     if position == 3 then
-      local options = { 'all' }
+      local options = {}
+      if sub == 'clear' then
+        options[1] = 'all'
+      end
       for index = 1, state.num_groups do
-        options[#options + 1] = tostring(index)
+        if (state.patterns[index] or '') ~= '' then
+          options[#options + 1] = tostring(index)
+        end
       end
       return vim.tbl_filter(function(name)
         return name:sub(1, #arglead) == arglead
@@ -157,7 +162,7 @@ end
 local function command_mark(opts)
   local sub, rest = opts.args:match('^(%S+)%s*(.*)$')
   if sub == nil then
-    util.error('Usage: Mark set|list|clear|toggle|save|load|palette [...]')
+    util.error('Usage: Mark set|list|edit|clear|toggle|save|load|palette [...]')
     return
   end
   -- The bang belongs to the subcommand (:Mark load!, :Mark set!).
@@ -186,6 +191,44 @@ local function command_mark(opts)
     end
   elseif sub == 'list' then
     marks().list()
+  elseif sub == 'edit' then
+    if rest ~= '' and not rest:match('^%d') then
+      util.error('Usage: Mark edit [group]')
+      return
+    end
+    local group = tonumber(rest:match('^(%d+)'))
+    if group == nil then
+      -- The current pattern: the last searched mark group, or the mark under
+      -- the cursor.
+      if state.last_search ~= -1 then
+        group = state.last_search
+      else
+        local _, _, index = marks().current_mark()
+        if index ~= -1 then
+          group = index
+        end
+      end
+    end
+    if group == nil then
+      util.error('No current mark to edit (set or search one first)')
+      return
+    end
+    if group > state.num_groups then
+      util.error(string.format('Only %d mark highlight groups are defined', state.num_groups))
+      return
+    end
+    vim.ui.input({
+      prompt = string.format('Edit pattern (group %d): ', group),
+      default = state.patterns[group] or '',
+    }, function(regexp)
+      if regexp == nil then
+        return -- cancelled
+      end
+      local ok, err = marks().replace(group, regexp)
+      if not ok then
+        util.error(err)
+      end
+    end)
   elseif sub == 'clear' then
     if rest == 'all' then
       marks().clear_all()

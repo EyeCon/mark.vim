@@ -413,6 +413,46 @@ function M.mark_regex(group_num, regexp_preset)
   end)
 end
 
+--- Replace the pattern of a mark group in place (e.g. for editing an
+-- existing mark): the group keeps its color, the edited group becomes the
+-- current mark, and an empty pattern clears the group. Returns
+-- (success, error_text).
+function M.replace(group_num, regexp)
+  if state.num_groups <= 0 then
+    return false, 'No mark highlight groups are defined'
+  end
+  if group_num < 1 or group_num > state.num_groups then
+    return false, string.format('Mark group %d does not exist', group_num)
+  end
+
+  regexp = regexp or ''
+  if regexp ~= '' then
+    local err = M.validate_regexp(regexp)
+    if err then
+      return false, 'Invalid regular expression: ' .. err
+    end
+    if state.config.history then
+      vim.fn.histadd('/', regexp)
+    end
+  end
+
+  set_pattern(group_num, regexp)
+  state.last_search = group_num
+
+  if state.enabled then
+    highlight.set_index_all_windows(group_num, regexp)
+  else
+    M.enable(true)
+  end
+
+  if regexp == '' then
+    echo_mark_cleared(group_num)
+  else
+    echo_mark(group_num, regexp)
+  end
+  return true, nil
+end
+
 --- Toggle display of all marks (patterns are kept).
 function M.toggle()
   if state.enabled then

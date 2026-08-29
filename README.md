@@ -40,6 +40,7 @@ Without `setup()`, the plugin starts with the built-in 'original' palette
 | ------------------------ | --------------------------------------------------------- |
 | `:[N]Mark set[!] {pat}`  | toggle / add-subtract pattern (group N with `[N]`)        |
 | `:Mark list`             | list all groups and patterns                              |
+| `:Mark edit [N]`         | edit current / group N pattern in a prompt                |
 | `:Mark clear [N\|all]`   | clear current mark / group N / everything                 |
 | `:Mark toggle`           | enable/disable display (patterns kept)                    |
 | `:Mark save [slot]`      | store current set in a slot                               |

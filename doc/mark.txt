@@ -132,6 +132,14 @@ COMMANDS                                                *mark-commands*
     Print all mark groups, their pattern(s) and markers: ">" marks the next
     group to be used, "/" the current search mark.
 
+                                                        *:Mark-edit*
+:Mark edit [N]
+    Edit the pattern of the current mark group (the last searched one, or
+    the mark under the cursor) or group [N] in a prompt prefilled with it.
+    Confirming replaces the pattern (the group keeps its color and becomes
+    the current mark), an empty confirmation clears the group's mark, and
+    cancelling leaves it untouched.
+
                                                         *:Mark-clear*
 :Mark clear [N|all]
     Clear the mark under the cursor (when it exists, else disable all
